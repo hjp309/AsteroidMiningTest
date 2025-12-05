@@ -1,0 +1,15 @@
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.AssemblyInfoInputs.cache
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.AssemblyInfo.cs
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.csproj.CoreCompileInputs.cache
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.sourcelink.json
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\bin\Debug\net9.0\AsteroidsMining.exe
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\bin\Debug\net9.0\AsteroidsMining.deps.json
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\bin\Debug\net9.0\AsteroidsMining.runtimeconfig.json
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\bin\Debug\net9.0\AsteroidsMining.dll
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\bin\Debug\net9.0\AsteroidsMining.pdb
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.dll
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\refint\AsteroidsMining.dll
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.pdb
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\AsteroidsMining.genruntimeconfig.cache
+C:\Users\dusti\OneDrive\Desktop\Howard\AsteroidMiningTest\obj\Debug\net9.0\ref\AsteroidsMining.dll

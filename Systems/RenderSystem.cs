@@ -9,14 +9,14 @@ namespace AsteroidsMining.Systems
     public class RenderSystem
     {
         private Ship ship;
-        private List<Asteroid> asteroids;
+        private AsteroidPool asteroidPool;
 
         public static string LogHistory = "";
 
-        public RenderSystem(Ship ship, List<Asteroid> asteroids)
+        public RenderSystem(Ship ship, AsteroidPool asteroidPool)
         {
             this.ship = ship;
-            this.asteroids = asteroids;
+            this.asteroidPool = asteroidPool;
         }
 
         public void DisplayGameState()
@@ -29,13 +29,7 @@ namespace AsteroidsMining.Systems
             output += $"Cargo: {ship.GetCurrentCargoWeight():F1}/{ship.CargoCapacity:F1}\n";
             output += $"Distance Traveled: {ship.TotalDistanceTraveled:F1}\n";
             
-            int remainingAsteroids = 0;
-            foreach (var asteroid in asteroids)
-            {
-                if (!asteroid.IsDepleted)
-                    remainingAsteroids++;
-            }
-            output += $"Remaining Asteroids: {remainingAsteroids}\n";
+            output += $"Remaining Asteroids: {asteroidPool.GetRemainingAsteroidCount()}\n";
             
             var cargoStatus = new StringBuilder();
             foreach (var resource in ship.CargoHold)
@@ -54,15 +48,12 @@ namespace AsteroidsMining.Systems
         public void DisplayNearbyAsteroids(double range = 50.0)
         {
             var nearbyAsteroids = new List<Asteroid>();
-            foreach (var asteroid in asteroids)
+            foreach (var asteroid in asteroidPool.asteroids)
             {
-                if (!asteroid.IsDepleted)
+                double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
+                if (distance <= range)
                 {
-                    double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
-                    if (distance <= range)
-                    {
-                        nearbyAsteroids.Add(asteroid);
-                    }
+                    nearbyAsteroids.Add(asteroid);
                 }
             }
 
@@ -100,18 +91,15 @@ namespace AsteroidsMining.Systems
                 }
             }
 
-            foreach (var asteroid in asteroids)
+            foreach (var asteroid in asteroidPool.asteroids)
             {
-                if (!asteroid.IsDepleted)
+                int mapX = (int)((asteroid.X / worldSize) * mapWidth);
+                int mapY = (int)((asteroid.Y / worldSize) * mapHeight);
+                
+                if (mapX >= 0 && mapX < mapWidth && mapY >= 0 && mapY < mapHeight)
                 {
-                    int mapX = (int)((asteroid.X / worldSize) * mapWidth);
-                    int mapY = (int)((asteroid.Y / worldSize) * mapHeight);
-                    
-                    if (mapX >= 0 && mapX < mapWidth && mapY >= 0 && mapY < mapHeight)
-                    {
-                        char symbol = GetAsteroidSymbol(asteroid.ResourceType);
-                        map[mapY, mapX] = symbol;
-                    }
+                    char symbol = GetAsteroidSymbol(asteroid.ResourceType);
+                    map[mapY, mapX] = symbol;
                 }
             }
             

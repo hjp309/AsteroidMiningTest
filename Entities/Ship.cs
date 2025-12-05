@@ -35,16 +35,14 @@ namespace AsteroidsMining.Entities
         }
 
         public bool CanMine(Asteroid asteroid)
-        {
-            if (asteroid.IsDepleted) return false;
-            
+        {   
             double distance = asteroid.GetDistanceTo(X, Y);
             return distance <= MiningRange;
         }
 
         public bool AddResource(Resource resource)
         {
-            double currentWeight = CargoHold.Sum(r => r.Weight);
+            double currentWeight = GetCurrentCargoWeight(); // FIX: Repeated line.
             
             if (currentWeight + resource.Weight <= CargoCapacity)
             {

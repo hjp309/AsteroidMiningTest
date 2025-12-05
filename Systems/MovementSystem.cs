@@ -8,12 +8,12 @@ namespace AsteroidsMining.Systems
     public class MovementSystem
     {
         private Ship ship;
-        private List<Asteroid> asteroids;
+        private AsteroidPool asteroidPool;
 
-        public MovementSystem(Ship ship, List<Asteroid> asteroids)
+        public MovementSystem(Ship ship, AsteroidPool asteroidPool)
         {
             this.ship = ship;
-            this.asteroids = asteroids;
+            this.asteroidPool = asteroidPool;
         }
 
         public void MoveToNearestAsteroid()
@@ -39,8 +39,9 @@ namespace AsteroidsMining.Systems
 
             if (distance > ship.Speed)
             {
-                dx = dx / distance * ship.Speed;
-                dy = dy / distance * ship.Speed;
+                dx = dx * ship.Speed / distance;    // Get scale dx and dy by ratio of ship.Speed to distance  
+                dy = dy * ship.Speed / distance;
+
                 ship.MoveTo(ship.X + dx, ship.Y + dy);
             }
             else
@@ -49,12 +50,26 @@ namespace AsteroidsMining.Systems
             }
         }
 
+        // FIX: More efficient. Not looping through the entire list. O(N). AI Assisted.
         private Asteroid FindNearestUnminedAsteroid()
         {
-            return asteroids
-                .Where(a => !a.IsDepleted)
-                .OrderBy(a => CalculateDistance(ship.X, ship.Y, a.X, a.Y))
-                .FirstOrDefault();
+            Asteroid nearest = null;
+            double bestDist = double.MaxValue;
+
+            foreach (var a in asteroidPool.asteroids)
+            {
+                double dx = a.X - ship.X;
+                double dy = a.Y - ship.Y;
+                double dist = dx * dx + dy * dy;
+
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    nearest = a;
+                }
+            }
+
+            return nearest;
         }
 
         private double CalculateDistance(double x1, double y1, double x2, double y2)

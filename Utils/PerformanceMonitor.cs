@@ -11,7 +11,7 @@ namespace AsteroidsMining.Utils
         private Stopwatch loopTimer;
         private List<double> loopTimes;
         private long memoryUsageStart;
-        private int frameCount;
+        public int frameCount;  //FIX: Make framecount public
 
         public static List<double> AllLoopTimes = new List<double>();
         public static List<string> PerformanceLogs = new List<string>();
