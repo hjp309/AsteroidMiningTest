@@ -9,6 +9,7 @@ namespace AsteroidsMining.Entities
         public double Y { get; set; }
         public ResourceType ResourceType { get; set; }
         public int ResourceQuantity { get; set; }
+        public bool IsDepleted { get; set; }
         public double MiningDifficulty { get; set; }
 
         public event Action<Asteroid> OnMined;
@@ -41,14 +42,17 @@ namespace AsteroidsMining.Entities
 
         public Resource Mine()
         {
+            if (IsDepleted) return null;
+
             var resource = new Resource(ResourceType, ResourceQuantity);
+            IsDepleted = true;
             
             OnMined?.Invoke(this);
             
             return resource;
         }
 
-        public void RespawnAsteroid(double x, double y, ResourceType resourceType, int quantity)
+        public void Respawn(double x, double y, ResourceType resourceType, int quantity)
         {
             X = x;
             Y = y;
