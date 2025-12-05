@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AsteroidsMining.Entities;
 
 namespace AsteroidsMining.Systems
@@ -23,17 +22,17 @@ namespace AsteroidsMining.Systems
 
         public bool ShouldReturnToBase()
         {
-            return ship.IsCargoFull();  //FIX: Redundant and different logic. (If >=90%, cargo is pretty much full)
-                                        //EDGE: Cargo may exceed 100% from <90%.
+            return ship.GetCurrentCargoWeight() > ship.CargoCapacity;
         }
 
-        public async Task ProcessCargoDelivery()
+        public void ProcessCargoDelivery()
         {
             if (IsAtBase())
             {
-                foreach (Resource resource in ship.CargoHold)
+                foreach (var resource in ship.CargoHold)
                 {
-                    DeliveredResources.Add(resource);   //FIX: Unnecessary instancing of same resource.
+                    var deliveredResource = new Resource(resource.Type, resource.Quantity);
+                    DeliveredResources.Add(deliveredResource);
                     
                     string logMessage = "";
                     for (int i = 0; i < resource.Quantity; i++)
@@ -50,7 +49,7 @@ namespace AsteroidsMining.Systems
             }
         }
 
-        public bool IsAtBase()  // FIX: Make method public
+        private bool IsAtBase()
         {
             return ship.X == 0.0 && ship.Y == 0.0;
         }
@@ -58,14 +57,31 @@ namespace AsteroidsMining.Systems
         public double CalculateCargoEfficiency()
         {
             double totalWeight = 0;
-            foreach (Resource resource in DeliveredResources)
+            foreach (var resource in DeliveredResources)
             {
-                totalWeight += resource.Weight; // FIX: Redundant weight calculation.
+                totalWeight += GetResourceWeight(resource.Type) * resource.Quantity;
             }
 
             if (ship.TotalDistanceTraveled == 0) return 0;
             
             return totalWeight / ship.TotalDistanceTraveled;
+        }
+
+        private double GetResourceWeight(ResourceType type)
+        {
+            switch (type)
+            {
+                case ResourceType.Iron:
+                    return 1.0;
+                case ResourceType.Gold:
+                    return 2.5;
+                case ResourceType.Platinum:
+                    return 4.0;
+                case ResourceType.Quantum:
+                    return 10.0;
+                default:
+                    return 1.0;
+            }
         }
 
         public int GetTotalTrips()

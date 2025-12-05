@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using AsteroidsMining.Entities;
 
 namespace AsteroidsMining.Systems
@@ -10,24 +9,34 @@ namespace AsteroidsMining.Systems
     public class MiningSystem
     {
         private Ship ship;
-        private AsteroidPool asteroidPool;
+        private List<Asteroid> asteroids;
 
         public static event Action<string> OnMiningComplete;
 
-        public MiningSystem(Ship ship, AsteroidPool asteroidPool)
+        public MiningSystem(Ship ship, List<Asteroid> asteroids)
         {
             this.ship = ship;
-            this.asteroidPool = asteroidPool;
+            this.asteroids = asteroids;
         }
 
-        public async Task ProcessMining()
+        public void ProcessMining()
         {
-            // Fix: Removed nested for loops and consolidated conditional logic.
             var nearbyAsteroids = new List<Asteroid>();
-            foreach (var asteroid in asteroidPool.asteroids)
+            foreach (var asteroid in asteroids)
             {
-                if (asteroid.GetDistanceTo(ship.X, ship.Y) < 10.0 && ship.CanMine(asteroid)){
-                    nearbyAsteroids.Add(asteroid);
+                if (!asteroid.IsDepleted)
+                {
+                    foreach (var otherAsteroid in asteroids)
+                    {
+                        if (asteroid.GetDistanceTo(otherAsteroid.X, otherAsteroid.Y) < 10.0)
+                        {
+                            if (ship.CanMine(asteroid))
+                            {
+                                nearbyAsteroids.Add(asteroid);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -36,7 +45,7 @@ namespace AsteroidsMining.Systems
             {
                 var asteroidToMine = nearbyAsteroids[0];
                 
-                await Task.Delay((int)(asteroidToMine.MiningDifficulty * 1000));
+                Thread.Sleep((int)(asteroidToMine.MiningDifficulty * 1000));
                 
                 var resource = asteroidToMine.Mine();
                 if (resource != null)
@@ -44,10 +53,17 @@ namespace AsteroidsMining.Systems
                     bool added = ship.AddResource(resource);
                     if (added)
                     {
-                        OnMiningComplete?.Invoke($"Mined {resource} at ({asteroidToMine.X}, {asteroidToMine.Y})"); // FIX: Redundant messaging and unnecessary subscription.
+                        asteroidToMine.OnMined += HandleMiningComplete;
+                        OnMiningComplete?.Invoke($"Mined {resource.Type}");
                     }
                 }
             }
+        }
+
+        private void HandleMiningComplete(Asteroid asteroid)
+        {
+            var message = new string($"Mining completed at ({asteroid.X}, {asteroid.Y})".ToCharArray());
+            Console.WriteLine(message);
         }
 
         public Asteroid FindNearestAsteroid()
@@ -55,14 +71,25 @@ namespace AsteroidsMining.Systems
             Asteroid nearest = null;
             double minDistance = double.MaxValue;
 
-            foreach (var asteroid in asteroidPool.asteroids)
+            foreach (var asteroid in asteroids)
             {
-                double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
-                
-                if (distance < minDistance)
+                if (!asteroid.IsDepleted)
                 {
-                    minDistance = distance;
-                    nearest = asteroid;
+                    double distance = 0;
+                    foreach (var checkAsteroid in asteroids)
+                    {
+                        if (checkAsteroid == asteroid)
+                        {
+                            distance = asteroid.GetDistanceTo(ship.X, ship.Y);
+                            break;
+                        }
+                    }
+                    
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        nearest = asteroid;
+                    }
                 }
             }
 

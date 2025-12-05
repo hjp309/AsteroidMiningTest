@@ -20,6 +20,7 @@ namespace AsteroidsMining.Entities
             Y = y;
             ResourceType = resourceType;
             ResourceQuantity = quantity;
+            IsDepleted = false;
             MiningDifficulty = GetMiningDifficulty(resourceType);
         }
 
@@ -50,15 +51,6 @@ namespace AsteroidsMining.Entities
             OnMined?.Invoke(this);
             
             return resource;
-        }
-
-        public void Respawn(double x, double y, ResourceType resourceType, int quantity)
-        {
-            X = x;
-            Y = y;
-            ResourceType = resourceType;
-            ResourceQuantity = quantity;
-            MiningDifficulty = GetMiningDifficulty(resourceType);
         }
 
         public double GetDistanceTo(double x, double y)

@@ -15,7 +15,7 @@ namespace AsteroidsMining.Tests
             
             // Test asteroid generation performance
             var stopwatch = Stopwatch.StartNew();
-            var asteroidPool = new AsteroidPool(100, 1000);
+            var asteroids = GenerateTestAsteroids(1000);
             stopwatch.Stop();
             Console.WriteLine($"Generated 1000 asteroids in {stopwatch.ElapsedMilliseconds}ms");
             
@@ -23,16 +23,19 @@ namespace AsteroidsMining.Tests
             var ship = new Ship(0, 0);
             stopwatch.Restart();
             
-            foreach (var asteroid in asteroidPool.asteroids)
+            for (int i = 0; i < 1000; i++)
             {
-                double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
+                foreach (var asteroid in asteroids)
+                {
+                    double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
+                }
             }
             
             stopwatch.Stop();
             Console.WriteLine($"1M distance calculations: {stopwatch.ElapsedMilliseconds}ms");
             
             // Test mining system performance
-            var miningSystem = new MiningSystem(ship, asteroidPool);
+            var miningSystem = new MiningSystem(ship, asteroids);
             stopwatch.Restart();
             
             for (int i = 0; i < 100; i++)
@@ -71,14 +74,17 @@ namespace AsteroidsMining.Tests
             Console.WriteLine($"Initial memory: {initialMemory / 1024}KB");
             
             // Create objects that will cause memory issues
-            var asteroidPool = new AsteroidPool(100, 5000);
+            var asteroids = GenerateTestAsteroids(5000);
             var ship = new Ship(500, 500);
-            var renderSystem = new RenderSystem(ship, asteroidPool);
+            var renderSystem = new RenderSystem(ship, asteroids);
             
             // Simulate memory leaks
-            foreach (var asteroid in asteroidPool.asteroids)
+            for (int i = 0; i < 100; i++)
             {
-                asteroid.OnMined += (a) => Console.WriteLine("Memory leak!");
+                foreach (var asteroid in asteroids)
+                {
+                    asteroid.OnMined += (a) => Console.WriteLine("Memory leak!");
+                }
             }
             
             long currentMemory = GC.GetTotalMemory(false);
