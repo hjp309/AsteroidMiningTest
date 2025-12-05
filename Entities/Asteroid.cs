@@ -61,5 +61,10 @@ namespace AsteroidsMining.Entities
         {
             return Math.Sqrt(Math.Pow(X - x, 2) + Math.Pow(Y - y, 2));
         }
+
+        public void ClearEventHandler()
+        {
+            OnMined = null;
+        }
     }
 }

@@ -1,103 +1,113 @@
 using System.Diagnostics;
 using AsteroidsMining.Entities; //FIX: Uncomment used dependencies
 using AsteroidsMining.Systems;
+using AsteroidsMining.Tests;
 using AsteroidsMining.Utils;
 
 namespace AsteroidsMining
 {
     public class AsteroidPool
     {
-        private Ship ship;
-        public int currentAsteroidCount;
-        public int targetAsteroidCount;
-        public List<Asteroid> asteroids;
-        private Random randomSeed;
-        public event Action<Asteroid> OnMined;
+        private readonly Ship ship;
 
-        // With ship for gameplay.
-        public AsteroidPool(Ship ship, int poolSize, int totalAsteroids)
+        public int totalSpawnedAsteroids;   // Total created EVER
+        public int targetAsteroidCount;     // Target Total
+        public List<Asteroid> asteroids;    // Active asteroids
+
+        private Random random = new Random();
+
+        public AsteroidPool(Ship ship, int initialPoolSize, int totalToSpawn)
         {
             this.ship = ship;
-            targetAsteroidCount = totalAsteroids;
-            currentAsteroidCount = 0;
-            randomSeed = new Random();
-            asteroids = new List<Asteroid>();
+            this.targetAsteroidCount = totalToSpawn;
+            this.totalSpawnedAsteroids = 0;
+            this.asteroids = new List<Asteroid>();
 
-            for (int i = 0; i < poolSize; i++)
-                GenerateAsteroid();
-                
-            Console.WriteLine($"Generated {poolSize} asteroids out of {totalAsteroids}");
+            // Pre-generate initial pool
+            for (int i = 0; i < initialPoolSize; i++)
+                SpawnNewAsteroid(0, 0);
         }
 
-        // Without ship for testing.
-        public AsteroidPool(int poolSize, int totalAsteroids)
+        // Initial asteroid spawn
+        private void SpawnNewAsteroid(double X, double Y)
         {
-            targetAsteroidCount = totalAsteroids;
-            currentAsteroidCount = 0;
-            randomSeed = new Random();
-            asteroids = new List<Asteroid>();
-
-            for (int i = 0; i < poolSize; i++)
-                GenerateAsteroid();
-                
-            Console.WriteLine($"Generated {poolSize} asteroids out of {totalAsteroids}");
-        }
-
-        // Modified to generate one at a time, added positional parameters to adjust spawn placement.
-        public void GenerateAsteroid(double X = 0.0, double Y = 0.0){
-            if (currentAsteroidCount == targetAsteroidCount)
+            if (totalSpawnedAsteroids >= targetAsteroidCount)
                 return;
 
             double x = MathUtils.GetRandomDouble(50, 950);
             double y = MathUtils.GetRandomDouble(50, 950);
 
+            // Avoid spawning near ship or previous asteroid position
             while (MathUtils.CalculateDistance(x, y, X, Y) < 30)
             {
                 x = MathUtils.GetRandomDouble(50, 950);
                 y = MathUtils.GetRandomDouble(50, 950);
             }
-            
-            // Generate resource type with bias toward common resources
-            ResourceType resourceType;
-            int randomValue = randomSeed.Next(100);
-            if (randomValue < 50)
-                resourceType = ResourceType.Iron;
-            else if (randomValue < 75)
-                resourceType = ResourceType.Gold;
-            else if (randomValue < 90)
-                resourceType = ResourceType.Platinum;
-            else
-                resourceType = ResourceType.Quantum;
-            
-            int quantity = randomSeed.Next(1, 10);
-            
-            var asteroid = new Asteroid(x, y, resourceType, quantity); //FIX: Missing quantity parameter
-            
-            asteroid.OnMined += HandleAsteroidMined;
-            
+
+            // Resource type (weighted)
+            ResourceType type = GenerateResourceType();
+            int qty = random.Next(1, 10);
+
+            // Create & track
+            Asteroid asteroid = new Asteroid(x, y, type, qty);
+
+            asteroid.OnMined += HandleAsteroidMined; // attach pooled handler
+
             asteroids.Add(asteroid);
-            currentAsteroidCount++;
+            totalSpawnedAsteroids++;
         }
 
-        public int GetRemainingAsteroidCount()
+        // Moved random resource definition for respawn and initial spawn
+        private ResourceType GenerateResourceType()
         {
-            return targetAsteroidCount - currentAsteroidCount; 
+            int roll = random.Next(100);
+
+            if (roll < 50) return ResourceType.Iron;
+            if (roll < 75) return ResourceType.Gold;
+            if (roll < 90) return ResourceType.Platinum;
+            return ResourceType.Quantum;
         }
 
-        public bool AreAllAsteroidsCleared()
-        {
-            return currentAsteroidCount == targetAsteroidCount;
-        }
-
+        // Garbage collection and reusing asteroids
         private void HandleAsteroidMined(Asteroid asteroid)
         {
-            // FIX: Object pooling. Remove and replace asteroid. Unsubscribe event subscription.
             asteroid.OnMined -= HandleAsteroidMined;
-            asteroids.Remove(asteroid);
-            if (currentAsteroidCount < targetAsteroidCount) 
-                GenerateAsteroid(ship.X, ship.Y);
+            asteroid.ClearEventHandler();           
+
+            // Keep the active pool filled (object pooling)
+            if (totalSpawnedAsteroids < targetAsteroidCount)
+            {
+                // Reuse asteroid
+                RespawnAsteroid(asteroid);
+            }
         }
+
+        // Respawn and resubscribe logic.
+        private void RespawnAsteroid(Asteroid asteroid)
+        {
+            double x = MathUtils.GetRandomDouble(50, 950);
+            double y = MathUtils.GetRandomDouble(50, 950);
+
+            while (MathUtils.CalculateDistance(x, y, ship.X, ship.Y) < 30)
+            {
+                x = MathUtils.GetRandomDouble(50, 950);
+                y = MathUtils.GetRandomDouble(50, 950);
+            }
+
+            var type = GenerateResourceType();
+            var qty = random.Next(1, 10);
+
+            asteroid.RespawnAsteroid(x, y, type, qty);
+            asteroid.OnMined += HandleAsteroidMined;
+        }
+
+        public bool AllAsteroidsSpawned()
+            => totalSpawnedAsteroids >= targetAsteroidCount;
+
+        public int GetRemainingAsteroidCount()
+            => targetAsteroidCount - totalSpawnedAsteroids;
     }
+
 
     class Program
     {
@@ -186,7 +196,7 @@ namespace AsteroidsMining
                 }
                 
                 // Check if game is complete
-                if (asteroidPool.AreAllAsteroidsCleared())
+                if (asteroidPool.AllAsteroidsSpawned())
                 {
                     DisplayGameComplete();
                     break;

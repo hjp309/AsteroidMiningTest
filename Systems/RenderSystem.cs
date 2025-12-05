@@ -42,7 +42,8 @@ namespace AsteroidsMining.Systems
             
             Console.WriteLine(output);
             
-            LogHistory += output;
+            // FIX: Concatenating string for no reason. Saving for now in case there's a purpose.
+            //LogHistory += output;
         }
 
         public void DisplayNearbyAsteroids(double range = 50.0)

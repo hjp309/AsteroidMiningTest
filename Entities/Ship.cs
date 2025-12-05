@@ -54,7 +54,7 @@ namespace AsteroidsMining.Entities
 
         public void UnloadCargo()
         {
-            CargoHold = new List<Resource>();
+            CargoHold.Clear();
         }
 
         public double GetCurrentCargoWeight()
