@@ -1,5 +1,3 @@
-using System;
-
 namespace AsteroidsMining.Entities
 {
     public enum ResourceType

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AsteroidsMining.Entities;
 
 namespace AsteroidsMining.Systems
@@ -27,14 +23,14 @@ namespace AsteroidsMining.Systems
                                         //EDGE: Cargo may exceed 100% from <90%.
         }
 
-        public async Task ProcessCargoDelivery()
+        public void ProcessCargoDelivery()
         {
             if (IsAtBase())
             {
-                foreach (Resource resource in ship.CargoHold)
+                foreach (var resource in ship.CargoHold)
                 {
                     DeliveredResources.Add(resource);   //FIX: Unnecessary instancing of same resource.
-                    
+
                     string logMessage = "";
                     for (int i = 0; i < resource.Quantity; i++)
                     {
@@ -45,7 +41,7 @@ namespace AsteroidsMining.Systems
 
                 totalResourcesDelivered += ship.CargoHold.Count;
                 totalTripsToBase++;
-                
+
                 ship.UnloadCargo();
             }
         }
@@ -64,7 +60,7 @@ namespace AsteroidsMining.Systems
             }
 
             if (ship.TotalDistanceTraveled == 0) return 0;
-            
+
             return totalWeight / ship.TotalDistanceTraveled;
         }
 

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace AsteroidsMining.Entities
 {
     public class Asteroid
@@ -42,9 +39,9 @@ namespace AsteroidsMining.Entities
         public Resource Mine()
         {
             var resource = new Resource(ResourceType, ResourceQuantity);
-            
+
             OnMined?.Invoke(this);
-            
+
             return resource;
         }
 

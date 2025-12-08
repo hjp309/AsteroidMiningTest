@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace AsteroidsMining.Entities
 {
     public class Ship
@@ -35,7 +31,7 @@ namespace AsteroidsMining.Entities
         }
 
         public bool CanMine(Asteroid asteroid)
-        {   
+        {
             double distance = asteroid.GetDistanceTo(X, Y);
             return distance <= MiningRange;
         }
@@ -43,7 +39,7 @@ namespace AsteroidsMining.Entities
         public bool AddResource(Resource resource)
         {
             double currentWeight = GetCurrentCargoWeight(); // FIX: Repeated line.
-            
+
             if (currentWeight + resource.Weight <= CargoCapacity)
             {
                 CargoHold.Add(resource);

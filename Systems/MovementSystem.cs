@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AsteroidsMining.Entities;
 
 namespace AsteroidsMining.Systems
@@ -89,7 +86,7 @@ namespace AsteroidsMining.Systems
                 double y = ship.Y + (targetY - ship.Y) * progress;
                 path.Add((x, y));
             }
-            
+
             return path;
         }
     }

@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Gbb8WaZauH0=",
+  "dgSpecHash": "5F5V8qMslnU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\dusti\\OneDrive\\Desktop\\Howard\\AsteroidMiningTest\\AsteroidsMining.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\dusti\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.11\\microsoft.netcore.app.ref.9.0.11.nupkg.sha512",
-    "C:\\Users\\dusti\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.11\\microsoft.windowsdesktop.app.ref.9.0.11.nupkg.sha512",
-    "C:\\Users\\dusti\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.11\\microsoft.aspnetcore.app.ref.9.0.11.nupkg.sha512",
-    "C:\\Users\\dusti\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\9.0.11\\microsoft.netcore.app.host.win-x64.9.0.11.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\Howard\\Desktop\\AsteroidMiningTest\\AsteroidsMining.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

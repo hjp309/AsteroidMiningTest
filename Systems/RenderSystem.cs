@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using AsteroidsMining.Entities;
 
@@ -11,7 +8,8 @@ namespace AsteroidsMining.Systems
         private Ship ship;
         private AsteroidPool asteroidPool;
 
-        public static string LogHistory = "";
+        public static StringBuilder LogHistory = new StringBuilder();
+        private static StringBuilder output = new StringBuilder();
 
         public RenderSystem(Ship ship, AsteroidPool asteroidPool)
         {
@@ -22,28 +20,26 @@ namespace AsteroidsMining.Systems
         public void DisplayGameState()
         {
             Console.Clear();
-            
-            string output = "";
-            output += "=== ASTEROIDS MINING GAME ===\n";
-            output += $"Ship Position: ({ship.X:F1}, {ship.Y:F1})\n";
-            output += $"Cargo: {ship.GetCurrentCargoWeight():F1}/{ship.CargoCapacity:F1}\n";
-            output += $"Distance Traveled: {ship.TotalDistanceTraveled:F1}\n";
-            
-            output += $"Remaining Asteroids: {asteroidPool.GetRemainingAsteroidCount()}\n";
-            
-            var cargoStatus = new StringBuilder();
+
+            output.AppendLine("=== ASTEROIDS MINING GAME ===");
+            output.AppendLine($"Ship Position: ({ship.X:F1}, {ship.Y:F1})");
+            output.AppendLine($"Cargo: {ship.GetCurrentCargoWeight():F1}/{ship.CargoCapacity:F1}");
+            output.AppendLine($"Distance Traveled: {ship.TotalDistanceTraveled:F1}");
+            output.AppendLine($"Remaining Asteroids: {asteroidPool.GetRemainingAsteroidCount()}");
+
+            // Cargo contents
+            output.Append("Cargo Contents: ");
             foreach (var resource in ship.CargoHold)
             {
-                cargoStatus.Append($"{resource.Type}: {resource.Quantity}, ");
+                output.Append($"{resource.Type}: {resource.Quantity}, ");
             }
-            output += $"Cargo Contents: {cargoStatus.ToString()}\n";
-            
-            output += "\n";
-            
-            Console.WriteLine(output);
-            
+            output.AppendLine();
+            output.AppendLine();
+
+            Console.WriteLine(output.ToString());
+
             // FIX: Concatenating string for no reason. Saving for now in case there's a purpose.
-            //LogHistory += output;
+            LogHistory.AppendLine(output.ToString());
         }
 
         public void DisplayNearbyAsteroids(double range = 50.0)
@@ -60,19 +56,19 @@ namespace AsteroidsMining.Systems
 
             Console.WriteLine("Nearby Asteroids:");
             var sortedAsteroids = nearbyAsteroids.OrderBy(a => a.GetDistanceTo(ship.X, ship.Y)).ToList();
-            
+
             for (int i = 0; i < Math.Min(5, sortedAsteroids.Count); i++)
             {
                 var asteroid = sortedAsteroids[i];
                 double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
-                
+
                 string asteroidInfo = "";
-                asteroidInfo += $"  [{i+1}] ";
+                asteroidInfo += $"  [{i + 1}] ";
                 asteroidInfo += $"Type: {asteroid.ResourceType} ";
                 asteroidInfo += $"Qty: {asteroid.ResourceQuantity} ";
                 asteroidInfo += $"Pos: ({asteroid.X:F1}, {asteroid.Y:F1}) ";
                 asteroidInfo += $"Dist: {distance:F1}";
-                
+
                 Console.WriteLine(asteroidInfo);
             }
         }
@@ -96,14 +92,14 @@ namespace AsteroidsMining.Systems
             {
                 int mapX = (int)((asteroid.X / worldSize) * mapWidth);
                 int mapY = (int)((asteroid.Y / worldSize) * mapHeight);
-                
+
                 if (mapX >= 0 && mapX < mapWidth && mapY >= 0 && mapY < mapHeight)
                 {
                     char symbol = GetAsteroidSymbol(asteroid.ResourceType);
                     map[mapY, mapX] = symbol;
                 }
             }
-            
+
             // Plot ship
             int shipX = (int)((ship.X / worldSize) * mapWidth);
             int shipY = (int)((ship.Y / worldSize) * mapHeight);

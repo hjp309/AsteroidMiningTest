@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Security.Cryptography;
 using AsteroidsMining.Entities;
 
 namespace AsteroidsMining.Systems
@@ -22,11 +19,11 @@ namespace AsteroidsMining.Systems
 
         public async Task ProcessMining()
         {
-            // Fix: Removed nested for loops and consolidated conditional logic.
             var nearbyAsteroids = new List<Asteroid>();
             foreach (var asteroid in asteroidPool.asteroids)
             {
-                if (asteroid.GetDistanceTo(ship.X, ship.Y) < 10.0 && ship.CanMine(asteroid)){
+                if (ship.CanMine(asteroid))
+                {
                     nearbyAsteroids.Add(asteroid);
                 }
             }
@@ -35,19 +32,26 @@ namespace AsteroidsMining.Systems
             if (nearbyAsteroids.Count > 0)
             {
                 var asteroidToMine = nearbyAsteroids[0];
-                
+                //asteroidToMine.OnMined += HandleMiningComplete;
+
                 await Task.Delay((int)(asteroidToMine.MiningDifficulty * 1000));
-                
+
                 var resource = asteroidToMine.Mine();
                 if (resource != null)
                 {
                     bool added = ship.AddResource(resource);
                     if (added)
                     {
-                        OnMiningComplete?.Invoke($"Mined {resource} at ({asteroidToMine.X}, {asteroidToMine.Y})"); // FIX: Redundant messaging and unnecessary subscription.
+                        OnMiningComplete?.Invoke($"Mined {resource} at ({asteroidToMine.X}, {asteroidToMine.Y})");
                     }
                 }
             }
+        }
+
+        private void HandleMiningComplete(Asteroid asteroid)
+        {
+            var message = new string($"Mined {asteroid.ResourceType} at ({asteroid.X}, {asteroid.Y})");
+            Console.WriteLine(message);
         }
 
         public Asteroid FindNearestAsteroid()
@@ -58,7 +62,7 @@ namespace AsteroidsMining.Systems
             foreach (var asteroid in asteroidPool.asteroids)
             {
                 double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
-                
+
                 if (distance < minDistance)
                 {
                     minDistance = distance;

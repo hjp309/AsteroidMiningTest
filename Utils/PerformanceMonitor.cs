@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace AsteroidsMining.Utils
 {
@@ -11,7 +8,7 @@ namespace AsteroidsMining.Utils
         private Stopwatch loopTimer;
         private List<double> loopTimes;
         private long memoryUsageStart;
-        public int frameCount;  //FIX: Make framecount public
+        public int frameCount;
 
         public static List<double> AllLoopTimes = new List<double>();
         public static List<string> PerformanceLogs = new List<string>();
@@ -22,7 +19,7 @@ namespace AsteroidsMining.Utils
             loopTimer = new Stopwatch();
             loopTimes = new List<double>();
             frameCount = 0;
-            
+
             // Record starting memory
             GC.Collect(); // Force garbage collection for baseline
             memoryUsageStart = GC.GetTotalMemory(false);
@@ -42,12 +39,12 @@ namespace AsteroidsMining.Utils
         {
             loopTimer.Stop();
             double loopTime = loopTimer.Elapsed.TotalMilliseconds;
-            
+
             loopTimes.Add(loopTime);
             AllLoopTimes.Add(loopTime);
-            
+
             frameCount++;
-            
+
             string logEntry = $"Frame {frameCount}: {loopTime:F2}ms";
             PerformanceLogs.Add(logEntry);
         }
@@ -62,9 +59,9 @@ namespace AsteroidsMining.Utils
             double avgLoopTime = loopTimes.Average();
             double minLoopTime = loopTimes.Min();
             double maxLoopTime = loopTimes.Max();
-            
+
             double recentAvg = loopTimes.Skip(Math.Max(0, loopTimes.Count - 60)).Average();
-            
+
             Console.WriteLine("\n=== PERFORMANCE STATS ===");
             Console.WriteLine($"Game Runtime: {gameTimer.Elapsed.TotalSeconds:F1}s");
             Console.WriteLine($"Total Frames: {frameCount}");
@@ -72,7 +69,7 @@ namespace AsteroidsMining.Utils
             Console.WriteLine($"Loop Time - Avg: {avgLoopTime:F2}ms, Min: {minLoopTime:F2}ms, Max: {maxLoopTime:F2}ms");
             Console.WriteLine($"Recent Loop Avg (60 frames): {recentAvg:F2}ms");
             Console.WriteLine($"Memory Usage: {currentMemory / 1024 / 1024:F1}MB (Delta: +{memoryDelta / 1024 / 1024:F1}MB)");
-            
+
             Console.WriteLine($"GC Gen 0: {GC.CollectionCount(0)}, Gen 1: {GC.CollectionCount(1)}, Gen 2: {GC.CollectionCount(2)}");
         }
 
@@ -81,7 +78,7 @@ namespace AsteroidsMining.Utils
             long memoryBefore = GC.GetTotalMemory(false);
             GC.Collect(2, GCCollectionMode.Forced);
             long memoryAfter = GC.GetTotalMemory(true);
-            
+
             string pressureLog = $"Memory pressure check: {memoryBefore / 1024}KB -> {memoryAfter / 1024}KB";
             PerformanceLogs.Add(pressureLog);
         }
@@ -92,16 +89,16 @@ namespace AsteroidsMining.Utils
 
             var early = new List<double>();
             var recent = new List<double>();
-            
+
             for (int i = 0; i < 60; i++)
             {
                 early.Add(loopTimes[i]);
                 recent.Add(loopTimes[loopTimes.Count - 60 + i]);
             }
-            
+
             double earlyAvg = early.Sum() / early.Count;
             double recentAvg = recent.Sum() / recent.Count;
-            
+
             return recentAvg > earlyAvg * 1.5; // 50% slower is degrading
         }
 
@@ -120,7 +117,7 @@ namespace AsteroidsMining.Utils
         public List<PerformanceSnapshot> GetPerformanceHistory()
         {
             var snapshots = new List<PerformanceSnapshot>();
-            
+
             // Create snapshots every 30 frames
             for (int i = 0; i < loopTimes.Count; i += 30)
             {
@@ -132,7 +129,7 @@ namespace AsteroidsMining.Utils
                 };
                 snapshots.Add(snapshot);
             }
-            
+
             return snapshots;
         }
     }
@@ -142,7 +139,7 @@ namespace AsteroidsMining.Utils
         public int FrameNumber { get; set; }
         public double LoopTime { get; set; }
         public DateTime Timestamp { get; set; }
-        
+
         public PerformanceSnapshot()
         {
             Timestamp = DateTime.Now;
