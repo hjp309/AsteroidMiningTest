@@ -33,7 +33,7 @@ namespace AsteroidsMining.Systems
                 {
                     var deliveredResource = new Resource(resource.Type, resource.Quantity);
                     DeliveredResources.Add(deliveredResource);
-                    
+
                     string logMessage = "";
                     for (int i = 0; i < resource.Quantity; i++)
                     {
@@ -44,12 +44,12 @@ namespace AsteroidsMining.Systems
 
                 totalResourcesDelivered += ship.CargoHold.Count;
                 totalTripsToBase++;
-                
+
                 ship.UnloadCargo();
             }
         }
 
-        private bool IsAtBase()
+        public bool IsAtBase()
         {
             return ship.X == 0.0 && ship.Y == 0.0;
         }
@@ -63,7 +63,7 @@ namespace AsteroidsMining.Systems
             }
 
             if (ship.TotalDistanceTraveled == 0) return 0;
-            
+
             return totalWeight / ship.TotalDistanceTraveled;
         }
 
