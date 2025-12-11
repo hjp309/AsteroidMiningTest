@@ -14,7 +14,7 @@ namespace AsteroidsMining.Tests
             // Test asteroid generation performance
             var stopwatch = Stopwatch.StartNew();
             var ship = new Ship(0, 0);
-            var asteroidPool = new AsteroidPool(ship, 100, 1000);
+            var asteroidPool = new AsteroidPool(ship, 1000);
             stopwatch.Stop();
             Console.WriteLine($"Generated 1000 asteroids in {stopwatch.ElapsedMilliseconds}ms");
 
@@ -70,7 +70,7 @@ namespace AsteroidsMining.Tests
 
             // Create objects that will cause memory issues
             var ship = new Ship(500, 500);
-            var asteroidPool = new AsteroidPool(ship, 100, 5000);
+            var asteroidPool = new AsteroidPool(ship, 5000);
             var renderSystem = new RenderSystem(ship, asteroidPool);
 
             // Simulate memory leaks

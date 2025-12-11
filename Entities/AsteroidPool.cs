@@ -5,31 +5,27 @@ namespace AsteroidsMining.Entities
     public class AsteroidPool
     {
         private readonly Ship ship;
-
-        public int totalSpawnedAsteroids;   // Total created EVER
         public int targetAsteroidCount;     // Target Total
+        public int totalMined;
         public List<Asteroid> asteroids;    // Active asteroids
 
         private Random random = new Random();
 
-        public AsteroidPool(Ship ship, int initialPoolSize, int totalToSpawn)
+        public AsteroidPool(Ship ship, int totalToSpawn)
         {
             this.ship = ship;
             this.targetAsteroidCount = totalToSpawn;
-            this.totalSpawnedAsteroids = 0;
+            this.totalMined = 0;
             this.asteroids = new List<Asteroid>();
 
             // Pre-generate initial pool
-            for (int i = 0; i < initialPoolSize; i++)
-                SpawnNewAsteroid(0, 0);
+            for (int i = 0; i < totalToSpawn; i++)
+                SpawnNewAsteroid(ship.X, ship.Y);
         }
 
         // Initial asteroid spawn
         private void SpawnNewAsteroid(double X, double Y)
         {
-            if (totalSpawnedAsteroids >= targetAsteroidCount)
-                return;
-
             double x = MathUtils.GetRandomDouble(50, 950);
             double y = MathUtils.GetRandomDouble(50, 950);
 
@@ -50,7 +46,6 @@ namespace AsteroidsMining.Entities
             asteroid.OnMined += HandleAsteroidMined; // attach pooled handler
 
             asteroids.Add(asteroid);
-            totalSpawnedAsteroids++;
         }
 
         // Moved random resource definition for respawn and initial spawn
@@ -69,38 +64,14 @@ namespace AsteroidsMining.Entities
         {
             asteroid.OnMined -= HandleAsteroidMined;
             asteroid.ClearEventHandler();
-
-            // Keep the active pool filled (object pooling)
-            if (totalSpawnedAsteroids < targetAsteroidCount)
-            {
-                // Reuse asteroid
-                RespawnAsteroid(asteroid);
-            }
+            asteroids.Remove(asteroid);
+            totalMined++;
         }
 
-        // Respawn and resubscribe logic.
-        private void RespawnAsteroid(Asteroid asteroid)
-        {
-            double x = MathUtils.GetRandomDouble(50, 950);
-            double y = MathUtils.GetRandomDouble(50, 950);
-
-            while (MathUtils.CalculateDistance(x, y, ship.X, ship.Y) < 30)
-            {
-                x = MathUtils.GetRandomDouble(50, 950);
-                y = MathUtils.GetRandomDouble(50, 950);
-            }
-
-            var type = GenerateResourceType();
-            var qty = random.Next(1, 10);
-
-            asteroid.RespawnAsteroid(x, y, type, qty);
-            asteroid.OnMined += HandleAsteroidMined;
-        }
-
-        public bool AllAsteroidsSpawned()
-            => totalSpawnedAsteroids >= targetAsteroidCount;
+        public bool AllAsteroidsMined()
+            => totalMined >= targetAsteroidCount;
 
         public int GetRemainingAsteroidCount()
-            => targetAsteroidCount - totalSpawnedAsteroids;
+            => asteroids.Count - totalMined;
     }
 }

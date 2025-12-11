@@ -49,7 +49,7 @@ namespace AsteroidsMining
 
             // Generate asteroids
             // FIX: Modified for gameplay feel, spawns only 100 at a time.
-            asteroidPool = new AsteroidPool(ship, 100, 3000);
+            asteroidPool = new AsteroidPool(ship, 3000);
 
             // Initialize systems
             miningSystem = new MiningSystem(ship, asteroidPool);
@@ -93,7 +93,7 @@ namespace AsteroidsMining
                 }
 
                 // Check if game is complete
-                if (asteroidPool.AllAsteroidsSpawned())
+                if (asteroidPool.AllAsteroidsMined())
                 {
                     DisplayGameComplete();
                     break;

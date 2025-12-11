@@ -1,3 +1,4 @@
+using System.Text;
 using AsteroidsMining.Entities;
 
 namespace AsteroidsMining.Systems
@@ -31,10 +32,10 @@ namespace AsteroidsMining.Systems
                 {
                     DeliveredResources.Add(resource);   //FIX: Unnecessary instancing of same resource.
 
-                    string logMessage = "";
+                    var logMessage = new StringBuilder();
                     for (int i = 0; i < resource.Quantity; i++)
                     {
-                        logMessage += $"Delivered {resource.Type} unit {i + 1}, ";
+                        logMessage.Append($"Delivered {resource.Type} unit {i + 1}, ");
                     }
                     Console.WriteLine(logMessage);
                 }

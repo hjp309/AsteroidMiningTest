@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
 using AsteroidsMining.Entities;
 
 namespace AsteroidsMining.Systems
@@ -50,8 +51,9 @@ namespace AsteroidsMining.Systems
 
         private void HandleMiningComplete(Asteroid asteroid)
         {
-            var message = new string($"Mined {asteroid.ResourceType} at ({asteroid.X}, {asteroid.Y})");
-            Console.WriteLine(message);
+            var message = new StringBuilder();
+            message.Append($"Mined {asteroid.ResourceType} at ({asteroid.X}, {asteroid.Y})");
+            Console.WriteLine(message.ToString());
         }
 
         public Asteroid FindNearestAsteroid()

@@ -20,6 +20,7 @@ namespace AsteroidsMining.Systems
         public void DisplayGameState()
         {
             Console.Clear();
+            output.Clear();
 
             output.AppendLine("=== ASTEROIDS MINING GAME ===");
             output.AppendLine($"Ship Position: ({ship.X:F1}, {ship.Y:F1})");
@@ -62,12 +63,12 @@ namespace AsteroidsMining.Systems
                 var asteroid = sortedAsteroids[i];
                 double distance = asteroid.GetDistanceTo(ship.X, ship.Y);
 
-                string asteroidInfo = "";
-                asteroidInfo += $"  [{i + 1}] ";
-                asteroidInfo += $"Type: {asteroid.ResourceType} ";
-                asteroidInfo += $"Qty: {asteroid.ResourceQuantity} ";
-                asteroidInfo += $"Pos: ({asteroid.X:F1}, {asteroid.Y:F1}) ";
-                asteroidInfo += $"Dist: {distance:F1}";
+                var asteroidInfo = new StringBuilder();
+                asteroidInfo.Append($"  [{i + 1}] ");
+                asteroidInfo.Append($"Type: {asteroid.ResourceType} ");
+                asteroidInfo.Append($"Qty: {asteroid.ResourceQuantity} ");
+                asteroidInfo.Append($"Pos: ({asteroid.X:F1}, {asteroid.Y:F1}) ");
+                asteroidInfo.Append($"Dist: {distance:F1}");
 
                 Console.WriteLine(asteroidInfo);
             }
